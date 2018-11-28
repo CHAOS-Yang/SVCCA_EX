@@ -1,0 +1,47 @@
+from __future__ import print_function
+import keras
+from keras.datasets import mnist
+from keras.models import load_model
+from keras import backend as K
+import matplotlib.pylab as plt
+
+batch_size = 128
+num_classes = 10
+epochs = 10
+
+# input image dimensions
+img_x, img_y = 28, 28
+
+# load the MNIST data set, which already splits into train and test sets for us
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+print(x_test)
+# reshape the data into a 4D tensor - (sample_number, x_img_size, y_img_size, num_channels)
+# because the MNIST is greyscale, we only have a single channel - RGB colour images would have 3
+x_train = x_train.reshape(x_train.shape[0], img_x, img_y, 1)
+x_test = x_test.reshape(x_test.shape[0], img_x, img_y, 1)
+input_shape = (img_x, img_y, 1)
+
+# convert the data to the right type
+x_train = x_train.astype('float32')
+x_test = x_test.astype('float32')
+x_train /= 255
+x_test /= 255
+
+
+# convert class vectors to binary class matrices - this is for use in the
+# categorical_crossentropy loss below
+y_train = keras.utils.to_categorical(y_train, num_classes)
+y_test = keras.utils.to_categorical(y_test, num_classes)
+
+model1=load_model('model_1.h5')
+model2=load_model('model_2.h5')
+
+get_3rd_layer_output1 = K.function([model1.layers[0].input],
+                                  [model1.layers[3].output])
+layer_output1 = get_3rd_layer_output1([x_test])[0]
+
+get_3rd_layer_output2 = K.function([model2.layers[0].input],
+                                  [model2.layers[3].output])
+layer_output2 = get_3rd_layer_output2([x_test])[0]
+
+print(layer_output)
